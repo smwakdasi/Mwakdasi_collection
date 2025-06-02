@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "145655470444",
+    "project_id": "mwakdasi-collection",
+    "storage_bucket": "mwakdasi-collection.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145655470444:android:71284aea4c234d52957b49",
+        "android_client_info": {
+          "package_name": "com.example.mwakdasicollection"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5OSMJPa5KzGH7o-kz1mNhDtrvngKLXbM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
