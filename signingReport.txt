@@ -1,0 +1,27 @@
+> Task :app:signingReport
+Variant: debug
+Config: debug
+Store: /home/nyamabites/.config/.android/debug.keystore
+Alias: AndroidDebugKey
+MD5: AD:F3:96:43:4B:94:60:59:87:79:D2:DE:F3:08:CA:BD
+SHA1: EC:0D:71:39:A2:3B:52:07:9D:AD:EF:17:F7:79:9F:31:C5:E9:E5:E0
+SHA-256: A9:CD:6C:BE:3E:78:53:62:87:9A:18:3A:EF:5B:4F:58:B2:AA:A7:46:43:7C:01:AF:D5:C6:F0:68:EA:A4:5D:D2
+Valid until: Monday, March 1, 2055
+----------
+Variant: release
+Config: null
+Store: null
+Alias: null
+----------
+Variant: debugAndroidTest
+Config: debug
+Store: /home/nyamabites/.config/.android/debug.keystore
+Alias: AndroidDebugKey
+MD5: AD:F3:96:43:4B:94:60:59:87:79:D2:DE:F3:08:CA:BD
+SHA1: EC:0D:71:39:A2:3B:52:07:9D:AD:EF:17:F7:79:9F:31:C5:E9:E5:E0
+SHA-256: A9:CD:6C:BE:3E:78:53:62:87:9A:18:3A:EF:5B:4F:58:B2:AA:A7:46:43:7C:01:AF:D5:C6:F0:68:EA:A4:5D:D2
+Valid until: Monday, March 1, 2055
+----------
+
+BUILD SUCCESSFUL in 10s
+1 actionable task: 1 executed
