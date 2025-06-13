@@ -1,3 +1,11 @@
 <resources>
+    <!-- Application Name -->
     <string name="app_name">Mwakdasi collection</string>
+
+    <!-- Floating Action Button Description -->
+    <string name="fab_action">Perform Action</string>
+
+    <!-- Additional Strings for Navigation Drawer or Other UI (if needed) -->
+    <string name="nav_drawer_title_home">Home</string>
+    <string name="nav_drawer_title_settings">Settings</string>
 </resources>
