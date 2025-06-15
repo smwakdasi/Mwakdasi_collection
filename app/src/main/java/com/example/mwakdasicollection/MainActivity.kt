@@ -39,11 +39,14 @@ class MainActivity : AppCompatActivity() {
      */
     private fun initializeViews() {
         recyclerView = findViewById(R.id.productRecyclerView)
-        progressBar = findViewById(R.id.progressBar)
+        progressBar = findViewById(R.id.progress_bar)
 
         // Set up RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = ProductAdapter(productList)
+        adapter = ProductAdapter(productList) { product ->
+            // Handle product click
+            Log.d(TAG, "Product clicked: ${product.name}")
+        }
         recyclerView.adapter = adapter
     }
 
