@@ -18,3 +18,4 @@ data class Admin(
     fun isValidAdmin(): Boolean {
         return name.isNotBlank() && email.isNotBlank() && email.contains("@")
     }
+}

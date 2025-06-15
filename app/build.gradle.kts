@@ -1,12 +1,13 @@
 plugins {
     alias(libs.plugins.android.application) // Android Application plugin
     alias(libs.plugins.kotlin.android) // Kotlin plugin
+    alias(libs.plugins.compose.compiler) // Jetpack Compose Compiler plugin
     id("com.google.gms.google-services") // Google Services plugin required for Firebase
 }
 
 android {
     namespace = "com.example.mwakdasicollection"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.mwakdasicollection"
@@ -35,6 +36,7 @@ android {
 
     kotlinOptions {
         jvmTarget = "17" // JVM target for Kotlin
+        languageVersion = "2.1" // Kotlin language version
     }
 
     buildFeatures {
@@ -86,6 +88,9 @@ dependencies {
 
     // Android Navigation (Fragment + XML approach)
     implementation(libs.androidx.navigation.fragment)
+    implementation(libs.androidx.navigation.runtime.android)
+    implementation(libs.androidx.runtime.android)
+    implementation(libs.play.services.analytics.impl)
 
     // Testing Libraries
     testImplementation(libs.junit) // JUnit for unit testing
