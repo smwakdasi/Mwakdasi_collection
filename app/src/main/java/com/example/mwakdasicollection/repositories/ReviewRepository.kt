@@ -3,42 +3,57 @@ package com.example.mwakdasicollection.repositories
 import com.example.mwakdasicollection.model.Review
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import kotlinx.coroutines.tasks.await
 
 class ReviewRepository {
     private val db = FirebaseFirestore.getInstance()
     private val reviewsRef = db.collection("reviews")
 
-    // Add a new review to Firestore
-    fun addReview(review: Review, onComplete: (Boolean, Exception?) -> Unit) {
-        reviewsRef.document(review.reviewId).set(review)
-            .addOnSuccessListener {
-                onComplete(true, null) // Review added successfully
-            }
-            .addOnFailureListener { exception ->
-                onComplete(false, exception) // Error occurred
-            }
+    /**
+     * Add a new review to Firestore.
+     *
+     * @param review The [Review] object to be added to Firestore.
+     * @return A [Result] encapsulating success or failure of the operation.
+     */
+    suspend fun addReview(review: Review): Result<Boolean> {
+        return try {
+            reviewsRef.document(review.reviewId).set(review).await()
+            Result.success(true) // Review successfully added
+        } catch (e: Exception) {
+            Result.failure(e) // Handle exception
+        }
     }
 
-    // Get reviews for a specific product
-    fun getProductReviews(productId: String, onComplete: (List<Review>?, Exception?) -> Unit) {
-        reviewsRef.whereEqualTo("productId", productId)
-            .orderBy("timestamp", Query.Direction.DESCENDING) // Sort by timestamp
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                val reviews = querySnapshot.documents.mapNotNull { document ->
-                    document.toObject(Review::class.java)
-                }
-                onComplete(reviews, null) // Successfully retrieved reviews
+    /**
+     * Fetch all reviews for a specific product.
+     *
+     * @param productId The ID of the product for which reviews are being fetched.
+     * @return A [Result] containing a list of [Review] objects if successful, or an [Exception] on failure.
+     */
+    suspend fun getProductReviews(productId: String): Result<List<Review>> {
+        return try {
+            val querySnapshot = reviewsRef.whereEqualTo("productId", productId)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .await()
+            val reviews = querySnapshot.documents.mapNotNull { document ->
+                document.toObject(Review::class.java)
             }
-            .addOnFailureListener { exception ->
-                onComplete(null, exception) // Handle errors
-            }
+            Result.success(reviews) // Successfully fetched reviews
+        } catch (e: Exception) {
+            Result.failure(e) // Handle exception
+        }
     }
 
-    // Optional query-based method for paginated reviews
+    /**
+     * Provide a Query for paginated reviews of a specific product.
+     *
+     * @param productId The ID of the product for which a paginated query of reviews is required.
+     * @return A [Query] object for Firestore to fetch reviews with pagination support.
+     */
     fun getProductReviewsQuery(productId: String): Query {
         return reviewsRef
             .whereEqualTo("productId", productId)
-            .orderBy("timestamp", Query.Direction.DESCENDING) // Sort by most recent
+            .orderBy("timestamp", Query.Direction.DESCENDING) // Sort by most recent reviews
     }
 }

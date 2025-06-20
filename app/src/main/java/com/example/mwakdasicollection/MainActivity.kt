@@ -1,90 +1,49 @@
 package com.example.mwakdasicollection
 
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.ProgressBar
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mwakdasicollection.model.Product
+import com.example.mwakdasicollection.ui.navigation.AppNavGraph
+import com.example.mwakdasicollection.ui.theme.MwakdasiCollectionTheme
+import com.example.mwakdasicollection.repositories.AuthRepositoryImpl
+import com.example.mwakdasicollection.viewmodel.AuthViewModel
+import com.example.mwakdasicollection.viewmodel.AuthViewModelFactory
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: ProductAdapter
-    private lateinit var progressBar: ProgressBar
-    private val productList = mutableListOf<Product>()
-    private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
-
-    companion object {
-        private const val TAG = "MainActivity"
-    }
+    // Firestore instance
+    private val firestore: FirebaseFirestore = Firebase.firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        // Initialize views
-        initializeViews()
+        setContent {
+            // Wrap main UI in the app's theme
+            MwakdasiCollectionTheme {
+                val authViewModel: AuthViewModel = viewModel(
+                    factory = AuthViewModelFactory(AuthRepositoryImpl())
+                )
 
-        // Fetch data from Firestore
-        fetchProductsFromFirestore()
-    }
+                // Observe authentication state
+                val isUserAuthenticated by authViewModel.isUserAuthenticated.collectAsState(initial = false)
 
-    /**
-     * Initializes views, including RecyclerView and ProgressBar
-     */
-    private fun initializeViews() {
-        recyclerView = findViewById(R.id.productRecyclerView)
-        progressBar = findViewById(R.id.progress_bar)
-
-        // Set up RecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = ProductAdapter(productList) { product ->
-            // Handle product click
-            Log.d(TAG, "Product clicked: ${product.name}")
-        }
-        recyclerView.adapter = adapter
-    }
-
-    /**
-     * Fetch product data from Firebase Firestore and update RecyclerView
-     */
-    private fun fetchProductsFromFirestore() {
-        showLoading(true)
-
-        firestore.collection("products")
-            .get()
-            .addOnSuccessListener { result ->
-                productList.clear()
-                for (document in result) {
-                    val product = document.toObject<Product>()
-                    if (product != null) {
-                        productList.add(product)
-                    } else {
-                        Log.w(TAG, "Skipped null product from Firestore document.")
-                    }
+                // App Navigation: Send user to the appropriate flow depending on their authentication state
+                if (isUserAuthenticated) {
+                    ProductScreen(firestore = firestore) // Show product list if authenticated
+                } else {
+                    AppNavGraph(isUserAuthenticated = false) // Show login/signup navigation graph
                 }
-                adapter.notifyDataSetChanged()
-                Log.d(TAG, "Fetched ${productList.size} products successfully.")
             }
-            .addOnFailureListener { exception ->
-                Log.e(TAG, "Error fetching products from Firestore.", exception)
-            }
-            .addOnCompleteListener {
-                showLoading(false)
-            }
-    }
-
-    /**
-     * Shows or hides the progress bar
-     * @param show Boolean indicating whether to show the progress bar
-     */
-    private fun showLoading(show: Boolean) {
-        progressBar.visibility = if (show) View.VISIBLE else View.GONE
-        recyclerView.visibility = if (show) View.INVISIBLE else View.VISIBLE
+        }
     }
 }

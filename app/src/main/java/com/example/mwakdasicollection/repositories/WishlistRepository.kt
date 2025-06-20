@@ -2,60 +2,77 @@ package com.example.mwakdasicollection.repositories
 
 import com.example.mwakdasicollection.model.WishlistItem
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import kotlinx.coroutines.tasks.await
 
 class WishlistRepository {
     private val db = FirebaseFirestore.getInstance()
     private val wishlistRef = db.collection("wishlists")
 
-    // Add an item to the wishlist
-    fun addToWishlist(item: WishlistItem, onComplete: (Boolean, Exception?) -> Unit) {
+    /**
+     * Add an item to the wishlist.
+     *
+     * @param item The [WishlistItem] to be added.
+     * @return A [Result] containing `true` on success, or an [Exception] on failure.
+     */
+    suspend fun addToWishlist(item: WishlistItem): Result<Boolean> {
         val docId = "${item.userId}_${item.productId}"
-        wishlistRef.document(docId).set(item)
-            .addOnSuccessListener {
-                onComplete(true, null) // Success
-            }
-            .addOnFailureListener { exception ->
-                onComplete(false, exception) // Error
-            }
+        return try {
+            wishlistRef.document(docId).set(item).await()
+            Result.success(true) // Successfully added
+        } catch (e: Exception) {
+            Result.failure(e) // Handle error
+        }
     }
 
-    // Get the wishlist for a specific user
-    fun getUserWishlist(userId: String, onComplete: (List<WishlistItem>?, Exception?) -> Unit) {
-        wishlistRef.whereEqualTo("userId", userId)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                val wishlist = querySnapshot.documents.mapNotNull { document ->
-                    document.toObject(WishlistItem::class.java)
-                }
-                onComplete(wishlist, null) // Success
+    /**
+     * Fetch the wishlist for a specific user.
+     *
+     * @param userId The ID of the user whose wishlist is being fetched.
+     * @return A [Result] containing a list of [WishlistItem] on success, or an [Exception] on failure.
+     */
+    suspend fun getUserWishlist(userId: String): Result<List<WishlistItem>> {
+        return try {
+            val snapshot = wishlistRef.whereEqualTo("userId", userId).get().await()
+            val wishlist = snapshot.documents.mapNotNull { document ->
+                document.toObject(WishlistItem::class.java)
             }
-            .addOnFailureListener { exception ->
-                onComplete(null, exception) // Error
-            }
+            Result.success(wishlist) // Successfully retrieved the wishlist
+        } catch (e: Exception) {
+            Result.failure(e) // Handle error
+        }
     }
 
-    // Check if an item exists in the wishlist
-    fun isItemInWishlist(userId: String, productId: String, onComplete: (Boolean, Exception?) -> Unit) {
+    /**
+     * Check if an item exists in the user's wishlist.
+     *
+     * @param userId The ID of the user.
+     * @param productId The ID of the product being checked.
+     * @return A [Result] containing `true` if the item exists, `false` otherwise, or an [Exception] on failure.
+     */
+    suspend fun isItemInWishlist(userId: String, productId: String): Result<Boolean> {
         val docId = "${userId}_${productId}"
-        wishlistRef.document(docId).get()
-            .addOnSuccessListener { document ->
-                onComplete(document.exists(), null) // Return `true` if the item exists
-            }
-            .addOnFailureListener { exception ->
-                onComplete(false, exception) // Error
-            }
+        return try {
+            val document = wishlistRef.document(docId).get().await()
+            Result.success(document.exists()) // Return true if the document exists
+        } catch (e: Exception) {
+            Result.failure(e) // Handle error
+        }
     }
 
-    // Remove an item from the wishlist
-    fun removeFromWishlist(userId: String, productId: String, onComplete: (Boolean, Exception?) -> Unit) {
+    /**
+     * Remove an item from the user's wishlist.
+     *
+     * @param userId The ID of the user.
+     * @param productId The ID of the product being removed.
+     * @return A [Result] containing `true` on successful removal, or an [Exception] on failure.
+     */
+    suspend fun removeFromWishlist(userId: String, productId: String): Result<Boolean> {
         val docId = "${userId}_${productId}"
-        wishlistRef.document(docId).delete()
-            .addOnSuccessListener {
-                onComplete(true, null) // Successfully removed item
-            }
-            .addOnFailureListener { exception ->
-                onComplete(false, exception) // Error
-            }
+        return try {
+            wishlistRef.document(docId).delete().await()
+            Result.success(true) // Successfully removed the item
+        } catch (e: Exception) {
+            Result.failure(e) // Handle error
+        }
     }
 }
