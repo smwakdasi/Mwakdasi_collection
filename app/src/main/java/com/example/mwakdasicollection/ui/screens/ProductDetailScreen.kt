@@ -1,6 +1,8 @@
 package com.example.mwakdasicollection.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -8,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mwakdasicollection.model.Product
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
     product: Product,
@@ -37,7 +40,7 @@ fun ProductDetailScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "Description: ${product.description}", style = MaterialTheme.typography.bodyLarge)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Price: ${product.formattedPrice()}", style = MaterialTheme.typography.titleMedium)
+                Text(text = "Price: $${"%.2f".format(product.price)}", style = MaterialTheme.typography.titleMedium)
 
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(onClick = { /* Add Product Purchase Logic */ }) {

@@ -4,14 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mwakdasicollection.model.Notification
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationListScreen(
     notifications: List<Notification>,
@@ -78,7 +77,8 @@ fun NotificationCard(
                     }
                 } else {
                     TextButton(onClick = onClick) {
-                        Icon(Icons.Filled.Visibility, contentDescription = "View Details")
+//                        Icon(Icons.Filled.Visibility, contentDescription = "View Details")
+                        Text("View Details")
                     }
                 }
             }

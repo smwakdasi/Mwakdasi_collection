@@ -1,9 +1,12 @@
 package com.example.mwakdasicollection.ui.screens
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import com.example.mwakdasicollection.model.Admin
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminScreen(
     admins: List<Admin>,                         // List of all admins
@@ -21,7 +24,8 @@ fun AdminScreen(
                 AdminList(
                     admins = admins,
                     onAdminSelected = { editingAdmin = it },          // Trigger edit mode
-                    onToggleActiveStatus = onToggleActiveStatus
+                    onToggleActiveStatus = onToggleActiveStatus,
+                    modifier = Modifier.padding(padding)              // Apply padding to the list
                 )
             } else {
                 AdminForm(

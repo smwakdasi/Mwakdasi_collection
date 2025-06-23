@@ -1,10 +1,12 @@
 package com.example.mwakdasicollection.ui.screens
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.example.mwakdasicollection.model.Address
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddressScreen(
     addresses: List<Address>,
@@ -22,7 +24,8 @@ fun AddressScreen(
                 AddressList(
                     addresses = addresses,
                     onAddressSelected = { editingAddress = it },
-                    onSetDefault = onSetDefaultAddress
+                    onSetDefault = onSetDefaultAddress,
+                    modifier = Modifier.padding(padding)
                 )
             } else {
                 AddressForm(

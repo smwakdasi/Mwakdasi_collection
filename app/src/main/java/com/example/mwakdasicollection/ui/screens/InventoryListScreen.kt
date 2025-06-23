@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mwakdasicollection.model.Inventory
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InventoryListScreen(
     inventoryItems: List<Inventory>,

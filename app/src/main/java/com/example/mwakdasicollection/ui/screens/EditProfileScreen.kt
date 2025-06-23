@@ -6,11 +6,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.mwakdasicollection.model.ProfileFragment
 import com.example.mwakdasicollection.viewmodel.ProfileViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfileScreen(
+    navController: NavController, // Allows navigation to other screens
     onProfileSaved: () -> Unit,  // Callback for navigation after saving
     viewModel: ProfileViewModel = viewModel()
 ) {

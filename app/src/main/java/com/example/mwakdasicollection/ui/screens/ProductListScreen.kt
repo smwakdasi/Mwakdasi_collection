@@ -11,10 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mwakdasicollection.model.Product
-import com.example.mwakdasicollection.ui.navigation.Screen
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductListScreen(
     firestore: FirebaseFirestore,
@@ -80,9 +81,7 @@ fun ProductListScreen(
                                     product = product,
                                     onClick = {
                                         // Navigate to ProductItemScreen, passing product details
-                                        navController.navigate(
-                                            Screen.ProductItemScreen.withArgs(product.id ?: "")
-                                        )
+                                        navController.navigate("ProductItemScreen/${product.id ?: ""}")
                                     }
                                 )
                             }
@@ -120,29 +119,6 @@ suspend fun fetchProductsFromFirestore(
     }
 }
 
-/**
- * Composable for an error screen with retry functionality.
- */
-@Composable
-fun ErrorScreen(message: String, onRetry: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = message,
-            color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onRetry) {
-            Text(text = "Retry")
-        }
-    }
-}
 
 /**
  * Card for displaying a single product, with navigation for product details.
@@ -174,7 +150,7 @@ fun ProductCard(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = product.formattedPrice() ?: "N/A",
+                text = product.price?.let {"$%.2f".format(it)} ?: "N/A",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary
             )
