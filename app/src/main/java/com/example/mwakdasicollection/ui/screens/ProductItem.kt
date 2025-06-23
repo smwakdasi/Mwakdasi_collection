@@ -1,7 +1,9 @@
 package com.example.mwakdasicollection.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,7 +13,10 @@ import androidx.compose.ui.unit.dp
 import com.example.mwakdasicollection.model.Product
 import com.google.firebase.firestore.FirebaseFirestore
 import androidx.navigation.NavController
+import kotlinx.coroutines.tasks.await
+import okhttp3.internal.format
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductItemScreen(
     productId: String,
@@ -41,7 +46,7 @@ fun ProductItemScreen(
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
@@ -62,7 +67,7 @@ fun ProductItemScreen(
 
                     !errorMessage.isNullOrEmpty() -> {
                         ErrorScreen(
-                            message = errorMessage,
+                            message = errorMessage!!,
                             onRetry = {
                                 isLoading = true
                                 errorMessage = null
@@ -118,7 +123,7 @@ fun ProductDetails(product: Product) {
 
         // Product Price
         Text(
-            text = product.formattedPrice() ?: "Price not available",
+            text = format(product.price.toString()) ?: "Price not available",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -138,7 +143,7 @@ fun ProductDetails(product: Product) {
  * Error screen with retry functionality.
  */
 @Composable
-fun ErrorScreen(message: String, onRetry: () -> Unit) {
+fun ErrorScreen(message: String, onRetry: @Composable () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -153,7 +158,7 @@ fun ErrorScreen(message: String, onRetry: () -> Unit) {
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onRetry) {
+        Button(onClick = onRetry as () -> Unit) {
             Text(text = "Retry")
         }
     }
