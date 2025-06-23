@@ -1,3 +1,5 @@
+package com.example.mwakdasicollection.model
+
 data class Product(
     val id: String = "",
     val name: String = "",
