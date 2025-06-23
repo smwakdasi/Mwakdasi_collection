@@ -44,11 +44,19 @@ fun AppNavGraph(isUserAuthenticated: Boolean) {
         }
 
         composable("wishlist") {
-            WishlistScreen(navController = navController) // Create this screen
+            WishlistScreen(
+                navController = navController,
+                wishlistItems = TODO(),
+                onWishlistItemClick = TODO()
+            ) // Create this screen
         }
 
         composable("orders") {
-            OrderListScreen(navController = navController) // Create this screen
+            OrderListScreen(
+                navController = navController,
+                orders = TODO(),
+                onOrderClick = TODO()
+            ) // Create this screen
         }
 
         // Profile Flow (Profile and Edit Profile Screens)
