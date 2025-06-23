@@ -6,8 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mwakdasicollection.ui.screens.*
-import com.example.mwakdasicollection.screens.profile.ProfileScreen
-import com.example.mwakdasicollection.screens.profile.EditProfileScreen
+import com.example.mwakdasicollection.ui.screens.ProfileScreen
+import com.example.mwakdasicollection.ui.screens.EditProfileScreen
 
 @Composable
 fun AppNavGraph(isUserAuthenticated: Boolean) {

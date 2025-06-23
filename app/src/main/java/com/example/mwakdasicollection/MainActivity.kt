@@ -39,7 +39,8 @@ class MainActivity : ComponentActivity() {
 
                 // App Navigation: Send user to the appropriate flow depending on their authentication state
                 if (isUserAuthenticated) {
-                    ProductScreen(firestore = firestore) // Show product list if authenticated
+                    AppNavGraph(isUserAuthenticated = true) // Show login/signup navigation graph
+//                    ProductScreen(firestore = firestore) // todo should be added later Show product list if authenticated
                 } else {
                     AppNavGraph(isUserAuthenticated = false) // Show login/signup navigation graph
                 }
