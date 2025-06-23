@@ -1,3 +1,3 @@
 package com.example.mwakdasicollection.viewmodel
 
-data class ProfileFragment()
+data class ProfileFragment(val name: String)

@@ -59,9 +59,14 @@ class AuthRepositoryImpl : AuthRepository {
      *
      * This method logs out the currently signed-in user and updates the authentication state.
      */
-    fun logout() {
-        firebaseAuth.signOut()
-        _isUserAuthenticated.value = false // Update state to reflect logout
+    override fun logout(): Result<Boolean> {
+        return try {
+            firebaseAuth.signOut()
+            _isUserAuthenticated.value = false // Update state to reflect logout
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     /**
@@ -69,7 +74,11 @@ class AuthRepositoryImpl : AuthRepository {
      *
      * @return The current user's UID if logged in, otherwise `null`.
      */
-    fun getCurrentUserId(): String? {
+    override fun getCurrentUserId(): String? {
         return firebaseAuth.currentUser?.uid
+    }
+
+    override suspend fun resetPassword(email: String): Result<Boolean> {
+        TODO("Not yet implemented")
     }
 }

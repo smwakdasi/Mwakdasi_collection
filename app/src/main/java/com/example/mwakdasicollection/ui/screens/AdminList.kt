@@ -1,9 +1,11 @@
 package com.example.mwakdasicollection.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mwakdasicollection.model.Admin
 
@@ -11,7 +13,8 @@ import com.example.mwakdasicollection.model.Admin
 fun AdminList(
     admins: List<Admin>,
     onAdminSelected: (Admin) -> Unit,           // Callback when an admin is selected from the list
-    onToggleActiveStatus: (Admin) -> Unit       // Callback to activate/deactivate admins
+    onToggleActiveStatus: (Admin) -> Unit,       // Callback to activate/deactivate admins
+    modifier: Modifier
 ) {
     LazyColumn(
         contentPadding = PaddingValues(8.dp),
