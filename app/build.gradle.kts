@@ -100,4 +100,7 @@ dependencies {
     // Debugging tools for Jetpack Compose
     debugImplementation("androidx.compose.ui:ui-tooling") // Debug UI Tooling
     debugImplementation("androidx.compose.ui:ui-test-manifest") // Testing Manifest for Compose
+
+    // Coil for image loading in Compose
+    implementation ("io.coil-kt:coil-compose:2.5.0")
 }

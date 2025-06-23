@@ -14,9 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 
-// Data model for the cart item
+// Data model for the cart item todo a cart model already exists in the model package
 data class Cart(
     val productId: String,      // Unique product ID
     val productName: String,    // Name of the product
@@ -29,8 +30,11 @@ data class Cart(
 }
 
 // Main screen composable
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartScreen() {
+fun CartScreen(
+    navController: NavController // Allows navigation to other screens
+) {
     // Manage the state of cart items
     var cartItems by remember {
         mutableStateOf(
@@ -55,11 +59,11 @@ fun CartScreen() {
     }
 
     // Calculate the total cost and total quantity
-    val totalCost by derivedStateOf {
-        cartItems.sumOf { it.getTotalCost() }
+    val totalCost by remember(cartItems) {
+        derivedStateOf { cartItems.sumOf { it.getTotalCost() } }
     }
-    val totalItems by derivedStateOf {
-        cartItems.sumOf { it.quantity }
+    val totalItems by remember(cartItems) {
+        derivedStateOf { cartItems.sumOf { it.quantity } }
     }
 
     Scaffold(
@@ -100,7 +104,7 @@ fun CartScreen() {
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
-                        text = "Total Cost: \$${"%.2f".format(totalCost)}",
+                        text = "Total Cost: $${"%.2f".format(totalCost)}",
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -158,7 +162,7 @@ fun CartItem(
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
-                    text = "Price: \$${cartItem.price}",
+                    text = "Price: $${cartItem.price}",
                     style = MaterialTheme.typography.bodySmall
                 )
 
