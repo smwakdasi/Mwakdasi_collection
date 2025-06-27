@@ -59,7 +59,7 @@ fun ProductListScreen(
                     !errorMessage.isNullOrEmpty() -> {
                         ErrorScreen(message = errorMessage!!) {
                             // Retry the fetch logic using a coroutine scope
-                            scope.launch {
+                            LaunchedEffect(Unit){
                                 fetchProductsFromFirestore(
                                     firestore = firestore,
                                     productList = productList,
