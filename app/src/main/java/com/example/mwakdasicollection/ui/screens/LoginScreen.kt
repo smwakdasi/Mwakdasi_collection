@@ -7,19 +7,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
+import com.example.mwakdasicollection.repositories.AuthRepositoryImpl
+import com.example.mwakdasicollection.viewmodel.AuthViewModel
+import com.example.mwakdasicollection.viewmodel.AuthViewModelFactory
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    onLoginSuccess: () -> Unit // Callback for successful login navigation
+    onLoginSuccess: () -> Unit
 ) {
     // State variables for email, password, loading, and error
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    // Create the view model using the proper factory
+    val authViewModel: AuthViewModel = viewModel(
+        factory = AuthViewModelFactory(AuthRepositoryImpl())
+    )
 
     Column(
         modifier = Modifier
@@ -73,24 +81,22 @@ fun LoginScreen(
         // Login Button
         Button(
             onClick = {
-                // Validate email and password before calling Firebase Auth
                 if (email.isNotBlank() && password.isNotBlank()) {
                     loading = true
                     errorMessage = null
-
-                    // Firebase Authentication login flow
-                    FirebaseAuth.getInstance()
-                        .signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { task ->
+                    // Invoke the ViewModel's login method
+                    authViewModel.login(
+                        email = email,
+                        password = password,
+                        onSuccess = {
                             loading = false
-                            if (task.isSuccessful) {
-                                // Navigate to HomeScreen on success
-                                onLoginSuccess()
-                            } else {
-                                // Display error message
-                                errorMessage = task.exception?.localizedMessage ?: "Login failed."
-                            }
+                            onLoginSuccess()
+                        },
+                        onError = { error ->
+                            loading = false
+                            errorMessage = error.localizedMessage ?: "Login failed."
                         }
+                    )
                 } else {
                     errorMessage = "Email and password must not be empty."
                 }
