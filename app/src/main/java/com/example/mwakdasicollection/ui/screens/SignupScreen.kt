@@ -6,12 +6,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
-import androidx.navigation.compose.rememberNavController
+import com.example.mwakdasicollection.repositories.AuthRepositoryImpl
+import com.example.mwakdasicollection.viewmodel.AuthViewModel
+import com.example.mwakdasicollection.viewmodel.AuthViewModelFactory
 
 @Composable
 fun SignupScreen(navController: NavController) {
@@ -21,6 +24,11 @@ fun SignupScreen(navController: NavController) {
     var password by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    // inject the AuthViewModel
+    val authViewModel: AuthViewModel = viewModel(
+        factory = AuthViewModelFactory(AuthRepositoryImpl())
+    )
 
     Column(
         modifier = Modifier
@@ -42,8 +50,12 @@ fun SignupScreen(navController: NavController) {
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text("Username", color = MaterialTheme.colorScheme.primary) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.primary,
+                focusedContainerColor = Color.Transparent
+            )
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -52,8 +64,12 @@ fun SignupScreen(navController: NavController) {
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text("Email", color = MaterialTheme.colorScheme.primary) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.primary,
+                        focusedContainerColor = Color.Transparent
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -62,12 +78,16 @@ fun SignupScreen(navController: NavController) {
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text("Password", color = MaterialTheme.colorScheme.primary) },
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.primary,
+                focusedContainerColor = Color.Transparent
+            )
         )
 
-        // Display an error message if login fails
+        // Display an error message if signup fails
         errorMessage?.let { message ->
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -79,31 +99,31 @@ fun SignupScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Login button with loading logic
+        // Signup button with loading logic
         Button(
             onClick = {
-                // Input validation TODO: Add users to implement login functionality
                 if (email.isNotBlank() && password.isNotBlank()) {
                     loading = true
                     errorMessage = null
 
-                    // Create a new user with Firebase Authentication
-                    FirebaseAuth.getInstance()
-                        .createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { task ->
+                    // Delegate the signup logic to the AuthViewModel
+                    authViewModel.signup(
+                        email = email,
+                        password = password,
+                        onSuccess = {
                             loading = false
-                            if (task.isSuccessful) {
-//                                // Navigate to HomeScreen on success
-                                Log.d("LoginScreen", "Login successful for user: $email")
-                                navController.navigate("home") {
-                                    popUpTo("signup") { inclusive = true } // Clear the back stack
-                                }
-                            } else {
-//                                // Display Firebase-specific error message
-                                errorMessage = task.exception?.localizedMessage ?: "Signup failed."
-                                Log.e("LoginScreen", "Error: ${task.exception?.message}")
+                            Log.d("SignupScreen", "Signup successful for user: $email")
+                            // After a successful signup, navigate to the home screen, for instance
+                            navController.navigate("home") {
+                                popUpTo("signup") { inclusive = true }
                             }
+                        },
+                        onError = { error ->
+                            loading = false
+                            errorMessage = error.localizedMessage ?: "Signup failed."
+                            Log.e("SignupScreen", "Error: ${error.message}")
                         }
+                    )
                 } else {
                     errorMessage = "Email and password must not be empty."
                 }

@@ -43,7 +43,7 @@ class AuthViewModel(private val authRepository: AuthRepositoryImpl) : ViewModel(
      * @param onSuccess Optional success callback.
      * @param onError Optional error callback with exception.
      */
-    fun register(
+    fun signup(
         email: String,
         password: String,
         onSuccess: (() -> Unit)? = null,
