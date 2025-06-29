@@ -10,10 +10,10 @@ class ReviewRepository {
     private val reviewsRef = db.collection("reviews")
 
     /**
-     * Add a new review to Firestore.
+     * Adds a new review to Firestore.
      *
-     * @param review The [Review] object to be added to Firestore.
-     * @return A [Result] encapsulating success or failure of the operation.
+     * @param review The [Review] object to be added.
+     * @return A [Result] encapsulating success (true) or an [Exception] on failure.
      */
     suspend fun addReview(review: Review): Result<Boolean> {
         return try {
@@ -25,14 +25,15 @@ class ReviewRepository {
     }
 
     /**
-     * Fetch all reviews for a specific product.
+     * Fetches all reviews associated with a specific product.
      *
-     * @param productId The ID of the product for which reviews are being fetched.
+     * @param productId The ID of the product for which reviews are fetched.
      * @return A [Result] containing a list of [Review] objects if successful, or an [Exception] on failure.
      */
-    suspend fun getProductReviews(productId: String): Result<List<Review>> {
+    suspend fun getReviewsByProductId(productId: String): Result<List<Review>> {
         return try {
-            val querySnapshot = reviewsRef.whereEqualTo("productId", productId)
+            val querySnapshot = reviewsRef
+                .whereEqualTo("productId", productId)
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .await()
@@ -46,7 +47,7 @@ class ReviewRepository {
     }
 
     /**
-     * Provide a Query for paginated reviews of a specific product.
+     * Provides a Query for paginated reviews of a specific product.
      *
      * @param productId The ID of the product for which a paginated query of reviews is required.
      * @return A [Query] object for Firestore to fetch reviews with pagination support.

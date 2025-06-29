@@ -24,4 +24,20 @@ class ProductRepository {
             Result.failure(e) // Failure - return the exception
         }
     }
+
+    /**
+     * Fetches a single product by its productId from the Firestore `products` collection.
+     *
+     * @param productId The ID of the product to retrieve.
+     * @return A [Result] containing the [Product] if found, or an [Exception] on failure.
+     */
+    suspend fun getProductById(productId: String): Result<Product?> {
+        return try {
+            val documentSnapshot = productsRef.document(productId).get().await()
+            val product = documentSnapshot.toObject(Product::class.java)
+            Result.success(product)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
