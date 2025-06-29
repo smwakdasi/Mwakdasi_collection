@@ -1,5 +1,6 @@
 package com.example.mwakdasicollection.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -9,6 +10,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import androidx.navigation.compose.rememberNavController
 
 @Composable
@@ -28,7 +30,11 @@ fun SignupScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Title
-        Text("SIGNUP", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
+        Text(
+            "SIGNUP",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -77,34 +83,36 @@ fun SignupScreen(navController: NavController) {
         Button(
             onClick = {
                 // Input validation TODO: Add users to implement login functionality
-//                if (email.isNotBlank() && password.isNotBlank()) {
-//                    loading = true
-//                    errorMessage = null
-//
-//                    // Firebase authentication
-//                    FirebaseAuth.getInstance()
-//                        .signInWithEmailAndPassword(email, password)
-//                        .addOnCompleteListener { task ->
-//                            loading = false
-//                            if (task.isSuccessful) {
+                if (email.isNotBlank() && password.isNotBlank()) {
+                    loading = true
+                    errorMessage = null
+
+                    // Create a new user with Firebase Authentication
+                    FirebaseAuth.getInstance()
+                        .createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            loading = false
+                            if (task.isSuccessful) {
 //                                // Navigate to HomeScreen on success
-//                                Log.d("LoginScreen", "Login successful for user: $email")
-//                                navController.navigate("HomeScreen")
-//                            } else {
+                                Log.d("LoginScreen", "Login successful for user: $email")
+                                navController.navigate("home") {
+                                    popUpTo("signup") { inclusive = true } // Clear the back stack
+                                }
+                            } else {
 //                                // Display Firebase-specific error message
-//                                errorMessage = task.exception?.localizedMessage ?: "Login failed."
-//                                Log.e("LoginScreen", "Error: ${task.exception?.message}")
-//                            }
-//                        }
-//                } else {
-//                    errorMessage = "Email and password must not be empty."
-//                }
+                                errorMessage = task.exception?.localizedMessage ?: "Signup failed."
+                                Log.e("LoginScreen", "Error: ${task.exception?.message}")
+                            }
+                        }
+                } else {
+                    errorMessage = "Email and password must not be empty."
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = !loading // Disable the button while loading
         ) {
             if (loading) {
-                // Show loading spinner when login is in progress
+                // Show loading spinner when signup is in progress
                 CircularProgressIndicator(
                     modifier = Modifier.size(16.dp),
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -116,8 +124,8 @@ fun SignupScreen(navController: NavController) {
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        // Navigate to LoginScreen TODO: FIX THE NAVIGATION
-        TextButton(onClick = { navController.navigate("LoginScreen") }) {
+        // Navigate to LoginScreen
+        TextButton(onClick = { navController.navigate("login") }) {
             Text("Already have an account? Login")
         }
     }
