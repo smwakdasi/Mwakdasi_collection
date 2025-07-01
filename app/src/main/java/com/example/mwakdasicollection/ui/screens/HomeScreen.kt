@@ -81,6 +81,17 @@ fun HomeScreen(
                 ) {
                     Text("Go to Profile")
                 }
+                Button(
+                    onClick = {
+                        // Navigate to Product List
+                        navController.navigate("product_list")
+                    },
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text("Go to Product List")
+                }
+
+
             }
         }
     )
