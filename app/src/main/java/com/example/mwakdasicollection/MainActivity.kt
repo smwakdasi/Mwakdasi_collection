@@ -1,3 +1,4 @@
+// MainActivity.kt
 package com.example.mwakdasicollection
 
 import android.os.Bundle
@@ -27,7 +28,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // Initialize Firebase first
         FirebaseApp.initializeApp(this)
-        
+
         // Now initialize Firestore after Firebase is set up
         firestore = Firebase.firestore
 
@@ -45,14 +46,11 @@ class MainActivity : ComponentActivity() {
                 // Observe authentication state
                 val isUserAuthenticated by authViewModel.isUserAuthenticated.collectAsState(initial = false)
 
-                // App Navigation: Send user to the appropriate flow depending on the authentication state
-                if (isUserAuthenticated) {
-                    AppNavGraph(isUserAuthenticated = true)
-                    // TODO Uncomment and use the Firestore instance where needed
-                    // ProductScreen(firestore = firestore)
-                } else {
-                    AppNavGraph(isUserAuthenticated = false)
-                }
+                // Let the navigation graph handle which screen to show.
+                AppNavGraph(
+                    isUserAuthenticated = isUserAuthenticated,
+                    firestore = firestore
+                )
             }
         }
     }

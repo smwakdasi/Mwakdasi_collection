@@ -2,6 +2,8 @@ package com.example.mwakdasicollection.repositories
 
 import com.example.mwakdasicollection.model.Product
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
 class ProductRepository {
@@ -25,19 +27,31 @@ class ProductRepository {
         }
     }
 
+    // Flow version for continuous observation
+    fun getAllProductsAsFlow(): Flow<List<Product>> = flow {
+        try {
+            val querySnapshot = productsRef.get().await()
+            val products = querySnapshot.documents.mapNotNull { document ->
+                document.toObject(Product::class.java)
+            }
+            emit(products)
+        } catch (e: Exception) {
+            emit(emptyList())
+        }
+    }
+
     /**
      * Fetches a single product by its productId from the Firestore `products` collection.
      *
      * @param productId The ID of the product to retrieve.
      * @return A [Result] containing the [Product] if found, or an [Exception] on failure.
      */
-    suspend fun getProductById(productId: String): Result<Product?> {
+    suspend fun getProductById(productId: String): Product? {
         return try {
             val documentSnapshot = productsRef.document(productId).get().await()
-            val product = documentSnapshot.toObject(Product::class.java)
-            Result.success(product)
+            documentSnapshot.toObject(Product::class.java)
         } catch (e: Exception) {
-            Result.failure(e)
+            null
         }
     }
 }

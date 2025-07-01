@@ -104,7 +104,7 @@ suspend fun fetchProductsFromFirestore(
 ) {
     onLoading(true) // Show loading indicator
     try {
-        val result = firestore.collection("products").get().await()
+        val result = firestore.collection("PRODUCTS").get().await()
         productList.clear()
         for (document in result) {
             val product = document.toObject(Product::class.java)
