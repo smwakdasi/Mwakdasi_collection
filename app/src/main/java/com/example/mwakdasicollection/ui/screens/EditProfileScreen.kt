@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.mwakdasicollection.model.ProfileFragment
+import com.example.mwakdasicollection.model.Profile
 import com.example.mwakdasicollection.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +71,7 @@ fun EditProfileScreen(
                 Button(
                     onClick = {
                         viewModel.updateProfile(
-                            ProfileFragment(
+                            Profile(
                                 id = profile?.id ?: "",
                                 name = name,
                                 email = email,
