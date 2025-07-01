@@ -30,7 +30,7 @@ fun ProductItemScreen(
     // Fetch product details when the screen is opened
     LaunchedEffect(productId) {
         try {
-            val document = firestore.collection("products").document(productId).get().await()
+            val document = firestore.collection("PRODUCTS").document(productId).get().await()
             product = document.toObject(Product::class.java)
             isLoading = false
         } catch (e: Exception) {
@@ -74,7 +74,7 @@ fun ProductItemScreen(
                                 // Retry fetching the product
                                 LaunchedEffect(productId) {
                                     try {
-                                        val document = firestore.collection("products").document(productId).get().await()
+                                        val document = firestore.collection("PRODUCTS").document(productId).get().await()
                                         product = document.toObject(Product::class.java)
                                         isLoading = false
                                     } catch (e: Exception) {

@@ -21,11 +21,11 @@ fun ProductListScreen(
     firestore: FirebaseFirestore,
     navController: NavController // Allows navigation to ProductItemScreen
 ) {
-    // State management for products, loading, and error states
+    // State management for search query, products, loading, and error states
+    var searchQuery by remember { mutableStateOf("") }
     val productList = remember { mutableStateListOf<Product>() }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    val scope = rememberCoroutineScope()
 
     // Fetch products from Firestore when the screen is displayed
     LaunchedEffect(Unit) {
@@ -37,6 +37,13 @@ fun ProductListScreen(
         )
     }
 
+    // Filter products based on the search query
+    val filteredProducts = if (searchQuery.isEmpty()) {
+        productList
+    } else {
+        productList.filter { it.name?.contains(searchQuery, ignoreCase = true) == true }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -44,46 +51,42 @@ fun ProductListScreen(
             )
         },
         content = { padding ->
-            Box(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize()
-            ) {
-                when {
-                    isLoading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
+            Column(modifier = Modifier.padding(padding)) {
+                // Search field for filtering products
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Search Products") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
 
-                    !errorMessage.isNullOrEmpty() -> {
-                        ErrorScreen(message = errorMessage!!) {
-                            // Retry the fetch logic using a coroutine scope
-                            LaunchedEffect(Unit){
-                                fetchProductsFromFirestore(
-                                    firestore = firestore,
-                                    productList = productList,
-                                    onLoading = { isLoading = it },
-                                    onError = { error -> errorMessage = error.message }
-                                )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    when {
+                        isLoading -> {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
+                        !errorMessage.isNullOrEmpty() -> {
+                            ErrorScreen(message = errorMessage!!) {
+                                // Retry logic can be implemented as needed
                             }
                         }
-                    }
-
-                    else -> {
-                        // Product list displayed using LazyColumn
-                        LazyColumn(
-                            contentPadding = PaddingValues(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(productList) { product ->
-                                ProductCard(
-                                    product = product,
-                                    onClick = {
-                                        // Navigate to ProductItemScreen, passing product details
-                                        navController.navigate("ProductItemScreen/${product.id ?: ""}")
-                                    }
-                                )
+                        else -> {
+                            // Display filtered product list using LazyColumn
+                            LazyColumn(
+                                contentPadding = PaddingValues(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(filteredProducts) { product ->
+                                    ProductCard(
+                                        product = product,
+                                        onClick = {
+                                            // Navigate to product detail screen
+                                            navController.navigate("product_item/${product.id ?: ""}")
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
@@ -150,7 +153,7 @@ fun ProductCard(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = product.price?.let {"$%.2f".format(it)} ?: "N/A",
+                text = product.price?.let {"KSH %.2f".format(it)} ?: "N/A",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary
             )

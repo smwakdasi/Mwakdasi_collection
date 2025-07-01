@@ -8,7 +8,7 @@ import kotlinx.coroutines.tasks.await
 
 class ProductRepository {
     private val db = FirebaseFirestore.getInstance()
-    private val productsRef = db.collection("products")
+    private val productsRef = db.collection("PRODUCTS")
 
     /**
      * Fetches all products from the Firestore `products` collection.
