@@ -8,9 +8,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mwakdasicollection.ui.screens.*
 import com.example.mwakdasicollection.ui.screens.ProfileScreen
 import com.example.mwakdasicollection.ui.screens.EditProfileScreen
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
-fun AppNavGraph(isUserAuthenticated: Boolean) {
+fun AppNavGraph(isUserAuthenticated: Boolean, firestore: FirebaseFirestore) {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -48,7 +49,7 @@ fun AppNavGraph(isUserAuthenticated: Boolean) {
                 navController = navController,
                 wishlistItems = TODO(),
                 onWishlistItemClick = TODO()
-            ) // Create this screen
+            )
         }
 
         composable("orders") {
@@ -56,7 +57,7 @@ fun AppNavGraph(isUserAuthenticated: Boolean) {
                 navController = navController,
                 orders = TODO(),
                 onOrderClick = TODO()
-            ) // Create this screen
+            )
         }
 
         // Profile Flow (Profile and Edit Profile Screens)
@@ -73,5 +74,22 @@ fun AppNavGraph(isUserAuthenticated: Boolean) {
                 onProfileSaved = { navController.popBackStack() } // Navigate back to ProfileScreen
             )
         }
+
+        // Product List and Details
+        composable("product_list") {
+            ProductListScreen(
+                firestore = firestore,
+                navController = navController
+            )
+        }
+
+//        To enable product detail navigation, update both the navigation route and the clickable lambda accordingly.
+//        composable("product_item/{productId}") { backStackEntry ->
+//            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+//            ProductItemScreen(
+//                navController = navController,
+//                productId = productId
+//            )
+//        }
     }
 }
