@@ -84,12 +84,13 @@ fun AppNavGraph(isUserAuthenticated: Boolean, firestore: FirebaseFirestore) {
         }
 
 //        To enable product detail navigation, update both the navigation route and the clickable lambda accordingly.
-//        composable("product_item/{productId}") { backStackEntry ->
-//            val productId = backStackEntry.arguments?.getString("productId") ?: ""
-//            ProductItemScreen(
-//                navController = navController,
-//                productId = productId
-//            )
-//        }
+        composable("product_item/{productId}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            ProductDetailWrapper(
+                productId = productId,
+                firestore = firestore,
+                onBack = { navController.popBackStack() } // Navigate back to ProductListScreen
+            )
+        }
     }
 }
