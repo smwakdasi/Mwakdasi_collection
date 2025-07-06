@@ -2,59 +2,36 @@ package com.example.mwakdasicollection.repositories
 
 import com.example.mwakdasicollection.model.Review
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
-class ReviewRepository {
-    private val db = FirebaseFirestore.getInstance()
-    private val reviewsRef = db.collection("reviews")
+class ReviewRepository(firestore: FirebaseFirestore) {
+//    private val db = FirebaseFirestore.getInstance()
+    private val productsRef = firestore.collection("PRODUCTS")
 
-    /**
-     * Adds a new review to Firestore.
-     *
-     * @param review The [Review] object to be added.
-     * @return A [Result] encapsulating success (true) or an [Exception] on failure.
-     */
-    suspend fun addReview(review: Review): Result<Boolean> {
-        return try {
-            reviewsRef.document(review.reviewId).set(review).await()
-            Result.success(true) // Review successfully added
-        } catch (e: Exception) {
-            Result.failure(e) // Handle exception
-        }
+    // Submit a review under products/{productId}/reviews
+    suspend fun submitReview(productId: String, review: Review) {
+        productsRef.document(productId)
+            .collection("reviews")
+            .add(review)
+            .await()
     }
 
-    /**
-     * Fetches all reviews associated with a specific product.
-     *
-     * @param productId The ID of the product for which reviews are fetched.
-     * @return A [Result] containing a list of [Review] objects if successful, or an [Exception] on failure.
-     */
-    suspend fun getReviewsByProductId(productId: String): Result<List<Review>> {
-        return try {
-            val querySnapshot = reviewsRef
-                .whereEqualTo("productId", productId)
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .get()
-                .await()
-            val reviews = querySnapshot.documents.mapNotNull { document ->
-                document.toObject(Review::class.java)
+    // Fetch all reviews for a given productId as a Flow
+    fun getReviews(productId: String): Flow<List<Review>> = callbackFlow {
+    val subscription = productsRef.document(productId)
+        .collection("reviews")
+        .orderBy("timestamp") // Order by timestamp to get the latest reviews first
+        .addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
             }
-            Result.success(reviews) // Successfully fetched reviews
-        } catch (e: Exception) {
-            Result.failure(e) // Handle exception
+            val reviews = snapshot?.documents?.mapNotNull { it.toObject(Review::class.java) } ?: emptyList()
+            trySend(reviews)
         }
-    }
-
-    /**
-     * Provides a Query for paginated reviews of a specific product.
-     *
-     * @param productId The ID of the product for which a paginated query of reviews is required.
-     * @return A [Query] object for Firestore to fetch reviews with pagination support.
-     */
-    fun getProductReviewsQuery(productId: String): Query {
-        return reviewsRef
-            .whereEqualTo("productId", productId)
-            .orderBy("timestamp", Query.Direction.DESCENDING) // Sort by most recent reviews
-    }
+    awaitClose { subscription.remove() }
+}
 }

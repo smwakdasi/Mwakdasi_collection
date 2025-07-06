@@ -1,6 +1,6 @@
 package com.example.mwakdasicollection.model
 
-data class ProfileFragment(
+data class Profile(
     val id: String,
     val name: String,
     val email: String,

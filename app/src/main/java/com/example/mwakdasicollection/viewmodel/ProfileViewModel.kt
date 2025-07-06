@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mwakdasicollection.model.ProfileFragment
+import com.example.mwakdasicollection.model.Profile
 import com.example.mwakdasicollection.repositories.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,8 +13,8 @@ import kotlinx.coroutines.withContext
 class ProfileViewModel : ViewModel() {
 
     // Backing property for profile data
-    private val _profileData = MutableLiveData<ProfileFragment?>()
-    val profileData: LiveData<ProfileFragment?> get() = _profileData
+    private val _profileData = MutableLiveData<Profile?>()
+    val profileData: LiveData<Profile?> get() = _profileData
 
     // Backing property to manage loading state
     private val _isLoading = MutableLiveData<Boolean>()
@@ -51,7 +51,7 @@ class ProfileViewModel : ViewModel() {
     /**
      * Update profile data in both the local repository and optionally backend.
      */
-    fun updateProfile(newProfile: ProfileFragment) {
+    fun updateProfile(newProfile: Profile) {
         try {
             // Save profile using the repository (includes validation)
             ProfileRepository.saveProfile(newProfile)

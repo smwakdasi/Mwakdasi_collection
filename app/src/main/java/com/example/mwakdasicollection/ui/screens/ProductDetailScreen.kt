@@ -1,21 +1,26 @@
 package com.example.mwakdasicollection.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mwakdasicollection.model.Product
+import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailScreen(
     product: Product,
+    firestore: FirebaseFirestore,
     onBack: () -> Unit
 ) {
+    // Wrap content in a vertical scroll in case it gets long
     Scaffold(
         topBar = {
             TopAppBar(
@@ -31,20 +36,32 @@ fun ProductDetailScreen(
             Column(
                 modifier = Modifier
                     .padding(padding)
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
             ) {
-                Text(text = "Product Name: ${product.name}", style = MaterialTheme.typography.headlineSmall)
+                // Display product information
+                Text(
+                    text = "Product Name: ${product.name}",
+                    style = MaterialTheme.typography.headlineSmall
+                )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Description: ${product.description}", style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    text = "Description: ${product.description}",
+                    style = MaterialTheme.typography.bodyLarge
+                )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Price: $${"%.2f".format(product.price)}", style = MaterialTheme.typography.titleMedium)
-
+                Text(
+                    text = "Price: KSH ${"%.2f".format(product.price)}",
+                    style = MaterialTheme.typography.titleMedium
+                )
                 Spacer(modifier = Modifier.height(24.dp))
-                Button(onClick = { /* Add Product Purchase Logic */ }) {
-                    Text("Buy Now")
+
+                // Insert ReviewSection to display and submit reviews
+                // Ensure that the product has a non-null id before passing it along
+                if (!product.id.isNullOrEmpty()) {
+                    ReviewSection(productId = product.id, firestore = firestore)
+                } else {
+                    Text("Reviews are not available for this product.")
                 }
             }
         }
