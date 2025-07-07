@@ -14,6 +14,7 @@ import com.example.mwakdasicollection.model.Product
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -141,6 +142,19 @@ fun ProductCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
+            // Display the image if there's a valid URL
+            product.imageUrl?.let { imageUrl ->
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = product.name ?: "Product Image",
+                    modifier = Modifier
+                        // You can change the size for a thumbnail or a bigger image
+                        //.size(80.dp)  // For a small preview image
+                        .fillMaxWidth()
+                        .height(150.dp) // For a larger image display
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             Text(
                 text = product.name ?: "Unknown Product",
                 style = MaterialTheme.typography.bodyLarge
@@ -153,7 +167,7 @@ fun ProductCard(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = product.price?.let {"KSH %.2f".format(it)} ?: "N/A",
+                text = product.price?.let { "KSH %.2f".format(it) } ?: "N/A",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary
             )

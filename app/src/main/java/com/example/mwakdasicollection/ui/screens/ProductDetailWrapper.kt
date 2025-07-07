@@ -1,5 +1,6 @@
 package com.example.mwakdasicollection.ui.screens
 
+import ProductDetailScreen
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

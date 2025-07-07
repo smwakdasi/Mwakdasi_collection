@@ -1,5 +1,3 @@
-package com.example.mwakdasicollection.ui.screens
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -8,9 +6,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.mwakdasicollection.model.Product
+import com.example.mwakdasicollection.ui.screens.ReviewSection
 import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -20,7 +19,6 @@ fun ProductDetailScreen(
     firestore: FirebaseFirestore,
     onBack: () -> Unit
 ) {
-    // Wrap content in a vertical scroll in case it gets long
     Scaffold(
         topBar = {
             TopAppBar(
@@ -39,7 +37,19 @@ fun ProductDetailScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
-                // Display product information
+                // Display the product image if available
+                product.imageUrl?.let { imageUrl ->
+                    AsyncImage(
+                        model = imageUrl,
+                        contentDescription = product.name ?: "Product Image",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(250.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                // Display product details
                 Text(
                     text = "Product Name: ${product.name}",
                     style = MaterialTheme.typography.headlineSmall
@@ -56,8 +66,7 @@ fun ProductDetailScreen(
                 )
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Insert ReviewSection to display and submit reviews
-                // Ensure that the product has a non-null id before passing it along
+                // Display reviews if product id is present
                 if (!product.id.isNullOrEmpty()) {
                     ReviewSection(productId = product.id, firestore = firestore)
                 } else {
