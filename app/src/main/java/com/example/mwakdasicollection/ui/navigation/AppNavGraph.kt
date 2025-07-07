@@ -60,6 +60,16 @@ fun AppNavGraph(isUserAuthenticated: Boolean, firestore: FirebaseFirestore) {
             )
         }
 
+        // New route for Order Creation Screen
+        composable("order_creation/{userId}") { backStackEntry ->
+            // Retrieve the userId from navigation arguments
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
+            OrderCreationScreen(
+                userId = userId,
+                navController = navController
+            )
+        }
+
         // Profile Flow (Profile and Edit Profile Screens)
         composable("profile") {
             ProfileScreen(
