@@ -3,11 +3,16 @@ package com.example.mwakdasicollection.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -16,8 +21,8 @@ import com.example.mwakdasicollection.model.Cart
 @Composable
 fun CartItem(
     cartItem: Cart,
-    onQuantityChange: (Cart, Int) -> Unit, // Callback to change quantity
-    onRemoveItem: (Cart) -> Unit          // Callback to remove the item
+    onQuantityChange: (Cart, Int) -> Unit, // Callback for changing quantity
+    onRemoveItem: (Cart) -> Unit          // Callback for removing item
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -30,11 +35,15 @@ fun CartItem(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically // Fix: Added proper alignment import
         ) {
             // Product Image
             Image(
-                painter = rememberAsyncImagePainter(cartItem.imageUrl),
+                painter = rememberAsyncImagePainter(
+                    model = cartItem.imageUrl,
+                    error = painterResource(id = R.drawable.placeholder_image) // Fix: Ensure placeholder_image exists
+                ),
                 contentDescription = cartItem.productName,
                 modifier = Modifier
                     .size(80.dp)
@@ -54,14 +63,14 @@ fun CartItem(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Quantity Controls
-                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                // Quantity Controls with Icons
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
                         onClick = {
                             if (cartItem.quantity > 1) onQuantityChange(cartItem, cartItem.quantity - 1)
                         }
                     ) {
-                        Text("-")
+                        Icon(Icons.Default.Remove, contentDescription = "Decrease Quantity")
                     }
 
                     Text(
@@ -72,17 +81,15 @@ fun CartItem(
                     )
 
                     IconButton(onClick = { onQuantityChange(cartItem, cartItem.quantity + 1) }) {
-                        Text("+")
+                        Icon(Icons.Default.Add, contentDescription = "Increase Quantity")
                     }
                 }
             }
 
             // Remove Button
-            IconButton(
-                onClick = { onRemoveItem(cartItem) }
-            ) {
+            IconButton(onClick = { onRemoveItem(cartItem) }) {
                 Icon(
-                    imageVector = androidx.compose.material.icons.Icons.Filled.Delete,
+                    imageVector = Icons.Default.Delete,
                     contentDescription = "Remove Item"
                 )
             }
