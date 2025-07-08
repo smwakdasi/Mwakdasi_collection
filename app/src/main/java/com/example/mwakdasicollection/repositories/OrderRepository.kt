@@ -4,56 +4,62 @@ import com.example.mwakdasicollection.model.Order
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
+import com.example.mwakdasicollection.repositories.interfaces.OrderRepositoryInterface
 
-class OrderRepository {
+
+class OrderRepository : OrderRepositoryInterface {
     private val db = FirebaseFirestore.getInstance()
     private val ordersRef = db.collection("orders")
 
     /**
-     * Places an order.
-     *
-     * @param order The [Order] object to be placed in the Firestore.
-     * @return A [Result] indicating success or failure.
+     * Place a new order in Firestore.
      */
-    suspend fun placeOrder(order: Order): Result<Boolean> {
+    override suspend fun placeOrder(order: Order): Result<Boolean> {
         return try {
             ordersRef.document(order.orderId).set(order).await()
-            Result.success(true) // Order placed successfully
+            Result.success(true)
         } catch (e: Exception) {
-            Result.failure(e) // Handle any exception during the operation
+            Result.failure(e)
         }
     }
 
     /**
-     * Fetches all orders for a specific user.
-     *
-     * @param userId The ID of the user whose orders are to be fetched.
-     * @return A [Result] containing a list of [Order] if successful, or an [Exception] on failure.
+     * Get all orders for a specific user.
      */
-    suspend fun getUserOrders(userId: String): Result<List<Order>> {
+    override suspend fun getUserOrders(userId: String): Result<List<Order>> {
         return try {
-            val querySnapshot = ordersRef.whereEqualTo("userId", userId)
+            val snapshot = ordersRef
+                .whereEqualTo("userId", userId)
                 .orderBy("orderDate", Query.Direction.DESCENDING)
                 .get()
                 .await()
-            val orders = querySnapshot.documents.mapNotNull { document ->
-                document.toObject(Order::class.java)
-            }
-            Result.success(orders) // Successfully fetched orders
+            val orders = snapshot.documents.mapNotNull { it.toObject(Order::class.java) }
+            Result.success(orders)
         } catch (e: Exception) {
-            Result.failure(e) // Handle exceptions during the query
+            Result.failure(e)
         }
     }
 
     /**
-     * Provides a [Query] for dynamic interaction (e.g., pagination) of a user's orders.
-     *
-     * @param userId The ID of the user whose orders are to be queried.
-     * @return A [Query] object for Firestore for flexible order fetching.
+     * Query orders for dynamic UI features like pagination.
      */
-    fun getUserOrdersQuery(userId: String): Query {
+    override fun getUserOrdersQuery(userId: String): Query {
         return ordersRef
             .whereEqualTo("userId", userId)
-            .orderBy("orderDate", Query.Direction.DESCENDING) // Sort orders by most recent
+            .orderBy("orderDate", Query.Direction.DESCENDING)
+    }
+
+    /**
+     * Update the status of an existing order.
+     */
+    suspend fun updateOrderStatus(orderId: String, newStatus: String): Result<Boolean> {
+        return try {
+            ordersRef.document(orderId)
+                .update("status", newStatus)
+                .await()
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }
