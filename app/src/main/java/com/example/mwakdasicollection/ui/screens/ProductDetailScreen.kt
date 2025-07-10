@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.mwakdasicollection.manager.CartManager
+import com.example.mwakdasicollection.model.Cart
 import com.example.mwakdasicollection.model.Product
 import com.example.mwakdasicollection.ui.screens.ReviewSection
 import com.google.firebase.firestore.FirebaseFirestore
@@ -66,8 +68,27 @@ fun ProductDetailScreen(
                 )
                 Spacer(modifier = Modifier.height(24.dp))
 
+                Button(
+                    onClick = {
+                        val newCartItem = Cart(
+                            productId = product.id,
+                            productName = product.name,
+                            quantity = 1,
+                            price = product.price,
+                            imageUrl = product.imageUrl ?: ""
+                        )
+                        // Add to the global cart
+                        CartManager.addToCart(newCartItem)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Add to Cart")
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
                 // Display reviews if product id is present
-                if (!product.id.isNullOrEmpty()) {
+                if (product.id.isNotEmpty()) {
                     ReviewSection(productId = product.id, firestore = firestore)
                 } else {
                     Text("Reviews are not available for this product.")
