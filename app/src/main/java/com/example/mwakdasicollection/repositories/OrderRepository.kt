@@ -56,4 +56,18 @@ class OrderRepository {
             .whereEqualTo("userId", userId)
             .orderBy("orderDate", Query.Direction.DESCENDING) // Sort orders by most recent
     }
+
+    suspend fun getOrderById(orderId: String): Result<com.example.mwakdasicollection.model.Order> {
+        return try {
+            val documentSnapshot = ordersRef.document(orderId).get().await()
+            val order = documentSnapshot.toObject(com.example.mwakdasicollection.model.Order::class.java)
+            if (order != null) {
+                Result.success(order)
+            } else {
+                Result.failure(Exception("Order not found"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

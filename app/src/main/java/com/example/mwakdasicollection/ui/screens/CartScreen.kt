@@ -61,7 +61,8 @@ fun CartScreen(navController: NavController) {
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
-                    onClick = { /* Handle checkout */ },
+                    onClick = { /* Handle checkout */
+                    navController.navigate("checkout")},
                     modifier = Modifier.fillMaxWidth(),
                     enabled = cartItems.isNotEmpty()
                 ) {

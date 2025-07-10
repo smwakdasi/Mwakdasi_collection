@@ -6,7 +6,7 @@ import java.util.*
 data class Order(
     val orderId: String = "",
     val userId: String = "",
-    val items: List<CartItem> = emptyList(), // Represents the list of items in the order
+    val items: List<Cart> = emptyList(), // Represents the list of items in the order
     val totalAmount: Double = items.sumOf { it.price * it.quantity }, // Calculates total dynamically
     val status: String = "pending", // e.g., pending, shipped, delivered, canceled
     val orderDate: Long = System.currentTimeMillis() // Order creation timestamp

@@ -49,7 +49,8 @@ class MainActivity : ComponentActivity() {
                 // Let the navigation graph handle which screen to show.
                 AppNavGraph(
                     isUserAuthenticated = isUserAuthenticated,
-                    firestore = firestore
+                    firestore = firestore,
+                    authViewModel = authViewModel
                 )
             }
         }
